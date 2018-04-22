@@ -1,0 +1,20 @@
+---
+yum_packages:
+  - unzip
+  - net-tools
+  - java-1.8.0-openjdk.x86_64
+  - vim-enhanced
+  - wget
+  - htop
+  - firewalld
+  - screen
+
+minecraft:
+  forge:
+    dir: /home/minecraft
+    installer: forge-1.10.2-12.18.3.2511-installer.jar
+    url: https://files.minecraftforge.net/maven/net/minecraftforge/forge/1.10.2-12.18.3.2511/forge-1.10.2-12.18.3.2511-installer.jar
+    server:
+      jar: forge-1.10.2-12.18.3.2511-universal.jar
+      xms: 1G
+      xmx: 2G

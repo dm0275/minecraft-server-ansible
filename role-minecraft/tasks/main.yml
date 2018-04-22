@@ -1,0 +1,62 @@
+---
+- name: Install epel-release
+  yum:
+    name: 'epel-release'
+    state: present
+
+- name: Install packages
+  yum:
+    name: '{{ item }}'
+    state: present
+  with_items: '{{ yum_packages }}'
+
+- name: Check if forge server is installed
+  stat:
+    path: "{{ minecraft.forge.dir }}/{{ minecraft.forge.server.jar }}"
+  register: minecraft_server_installed
+
+- firewalld:
+    zone: public
+    port: 25565/tcp
+    permanent: true
+    state: enabled
+
+- name: Add minecraft User
+  user:
+    name: minecraft
+    state: present
+
+- name: Download Forge
+  get_url:
+    url: '{{ minecraft.forge.url }}'
+    dest: /home/minecraft
+    owner: minecraft
+    group: minecraft
+    mode: 0755
+
+- name: Install forge
+  shell: "java -jar {{ minecraft.forge.installer }} --installServer"
+  args:
+    chdir: '{{ minecraft.forge.dir }}'
+  become_user: minecraft
+  when: minecraft_server_installed.stat.exists == False
+
+- name: Drop service file
+  template:
+    src: minecraft.service.j2
+    dest: /etc/systemd/system/minecraft.service
+    mode: 0644
+  notify: Run minecraft
+
+- meta: flush_handlers
+
+- copy:
+    src: ../files/eula.txt
+    dest: "{{ minecraft.forge.dir }}/eula.txt"
+    owner: minecraft
+    group: minecraft
+    force: yes
+    mode: 0644
+  notify: Run minecraft
+
+- meta: flush_handlers

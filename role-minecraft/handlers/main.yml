@@ -1,0 +1,14 @@
+---
+- name: Run firewalld
+  systemd:
+    name: firewalld.service
+    state: started
+    enabled: yes
+    daemon_reload: yes
+
+- name: Run minecraft
+  systemd:
+    name: minecraft.service
+    state: started
+    enabled: yes
+    daemon_reload: yes
